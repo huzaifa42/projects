@@ -75,13 +75,14 @@ class Blockchain:
     def resolve_conflicts(self):
         neighbours=self.nodes
         maxlen=len(self.chain)
+        new_chain=None
         for node in neighbours:
             respose=requests.get(f'http://{node}/chain')
             if respose.status_code==200:
-                len=respose.json()['length']
+                clen=respose.json()['length']
                 chain=respose.json()['chain']
-                if self.valid_chain(chain) and maxlen <len:
-                    maxlen=len
+                if self.valid_chain(chain) and maxlen <clen:
+                    maxlen=clen
                     new_chain=chain
                 
         if new_chain:
@@ -147,7 +148,7 @@ def full_chain():
     }
     return jsonify(response), 200
 
-@app.route('/node/register',methods=['POST'])
+@app.route('/nodes/register',methods=['POST'])
 def register_nodes():
     values=request.get_json()
     nodes=values.get('nodes')
